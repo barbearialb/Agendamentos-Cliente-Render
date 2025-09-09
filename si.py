@@ -13,12 +13,66 @@ import pandas as pd
 import time
 from PIL import Image, ImageDraw, ImageFont
 import io
+import os # <-- MÓDULO ADICIONADO
+
+# --- 1. CAMINHO SEGURO PARA O ÍCONE (NOVO BLOCO DE CÓDIGO) ---
+# Documentação: Esta seção cria um caminho completo e seguro para a pasta 'static',
+# garantindo que o Render encontre seu arquivo de ícone.
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+
+try:
+    # Lembre-se que o ícone precisa estar na pasta 'static' do seu projeto no Render
+    favicon_path = os.path.join(STATIC_DIR, "icon_any_192.png")
+    favicon = Image.open(favicon_path)
+except FileNotFoundError:
+    st.warning("Arquivo 'icone_barbearia.png' não encontrado na pasta 'static'. Usando emoji padrão.")
+    favicon = "📅" # Um emoji como alternativa caso o ícone não seja encontrado
 
 st.set_page_config(
     page_title="Agendamentos-Barbearia Lucas Borges",
-    page_icon="icone_barbearia.png"
+    page_icon=favicon # <-- O ÍCONE AGORA É CARREGADO DE FORMA SEGURA
 )
 
+@st.cache_resource
+def initialize_firebase():
+    """
+    Inicializa a conexão com o Firebase usando as credenciais da variável
+    de ambiente 'firebase_credentials_json' no Render.
+    """
+    try:
+        creds_json_str = os.environ.get('firebase_credentials_json')
+        if not creds_json_str:
+            st.error("A variável de ambiente 'firebase_credentials_json' não foi encontrada!")
+            st.stop()
+
+        creds_dict = json.loads(creds_json_str)
+        cred = credentials.Certificate(creds_dict)
+        firebase_admin.initialize_app(cred)
+        print("Firebase inicializado com sucesso!")
+
+    except Exception as e:
+        # Ignora o erro se o app já estiver inicializado, o que é normal com o cache.
+        if "The default Firebase app already exists" not in str(e):
+            st.error(f"Erro ao inicializar o Firebase: {e}")
+            st.stop()
+
+try:
+    EMAIL = os.environ.get("EMAIL_CREDENCIADO")
+    SENHA = os.environ.get("EMAIL_SENHA")
+
+    if not EMAIL or not SENHA:
+        st.error("As variáveis de ambiente para e-mail (EMAIL_CREDENCIADO, EMAIL_SENHA) não foram encontradas!")
+        st.stop()
+
+except Exception as e:
+    st.error(f"Erro ao carregar as credenciais de e-mail: {e}")
+    st.stop()
+
+initialize_firebase() 
+# Agora, obtém a referência do banco de dados de forma segura
+db = firestore.client() 
 
 st.markdown(
     """
@@ -57,39 +111,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Carregar as credenciais do Firebase e-mail a partir do Streamlit secrets
-FIREBASE_CREDENTIALS = None
-EMAIL = None
-SENHA = None
-
-try:
-    # Carregar credenciais do Firebase
-    firebase_credentials_json = st.secrets["firebase"]["FIREBASE_CREDENTIALS"]
-    FIREBASE_CREDENTIALS = json.loads(firebase_credentials_json)
-
-    # Carregar credenciais de e-mail
-    EMAIL = st.secrets["email"]["EMAIL_CREDENCIADO"]
-    SENHA = st.secrets["email"]["EMAIL_SENHA"]
-
-except KeyError as e:
-    st.error(f"Chave ausente no arquivo secrets.toml: {e}")
-except json.JSONDecodeError as e:
-    st.error(f"Erro ao decodificar as credenciais do Firebase: {e}")
-except Exception as e:
-    st.error(f"Erro inesperado: {e}")
-
-# Inicializar Firebase com as credenciais
-if FIREBASE_CREDENTIALS:
-    if not firebase_admin._apps:  # Verifica se o Firebase já foi inicializado
-        try:
-            cred = credentials.Certificate(FIREBASE_CREDENTIALS)
-            firebase_admin.initialize_app(cred)
-        except Exception as e:
-            st.error(f"Erro ao inicializar o Firebase: {e}")
-
-
-# Obter referência do Firestore
-db = firestore.client() if firebase_admin._apps else None
 
 # Dados básicos
 # A lista de horários base será gerada dinamicamente na tabela
@@ -867,4 +888,5 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
