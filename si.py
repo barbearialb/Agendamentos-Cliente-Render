@@ -90,23 +90,10 @@ st.markdown(
         #root > div:nth-child(1) > div.withScreencast > div > div > section > div.stMainBlockContainer.block-container.st-emotion-cache-mtjnbi.eht7o1d4 > div > div > div > div:nth-child(8) > div > div > div > div > div > div > button {
             background-color: #28a745 !important;
             border-color: #28a745 !important;
-            transition: background-color 0.2s ease, transform 0.1s ease !important;
-            cursor: pointer !important;
         }
         /* Alvo: O texto dentro do botão verde */
         #root > div:nth-child(1) > div.withScreencast > div > div > section > div.stMainBlockContainer.block-container.st-emotion-cache-mtjnbi.eht7o1d4 > div > div > div > div:nth-child(8) > div > div > div > div > div > div > button p {
             color: white !important;
-        }
-        
-        /* EFEITO AO PASSAR O MOUSE (HOVER) */
-        #root > div:nth-child(1) > div.withScreencast > div > div > section > div.stMainBlockContainer.block-container.st-emotion-cache-mtjnbi.eht7o1d4 > div > div > div > div:nth-child(8) > div > div > div > div > div > div > button:hover {
-            background-color: #218838 !important; /* Um tom de verde mais escuro */
-            border-color: #1e7e34 !important;
-        }
-        /* EFEITO AO CLICAR (ACTIVE) */
-        #root > div:nth-child(1) > div.withScreencast > div > div > section > div.stMainBlockContainer.block-container.st-emotion-cache-mtjnbi.eht7o1d4 > div > div > div > div:nth-child(8) > div > div > div > div > div > div > button:active {
-            background-color: #1e7e34 !important; /* Um tom de verde ainda mais escuro */
-            transform: translateY(2px) !important; /* Move o botão 2 pixels para baixo */
         }
 
         /* --- BOTÃO VERMELHO (CANCELAR AGENDAMENTO) --- */
@@ -114,23 +101,10 @@ st.markdown(
         #root > div:nth-child(1) > div.withScreencast > div > div > section > div.stMainBlockContainer.block-container.st-emotion-cache-mtjnbi.eht7o1d4 > div > div > div > div:nth-child(9) > div > div > div > div > div > div > button {
             background-color: #dc3545 !important;
             border-color: #dc3545 !important;
-            transition: background-color 0.2s ease, transform 0.1s ease !important;
-            cursor: pointer !important;
         }
         /* Alvo: O texto dentro do botão vermelho */
         #root > div:nth-child(1) > div.withScreencast > div > div > section > div.stMainBlockContainer.block-container.st-emotion-cache-mtjnbi.eht7o1d4 > div > div > div > div:nth-child(9) > div > div > div > div > div > div > button p {
             color: white !important;
-        }
-        }
-        /* EFEITO AO PASSAR O MOUSE (HOVER) */
-        #root > div:nth-child(1) > div.withScreencast > div > div > section > div.stMainBlockContainer.block-container.st-emotion-cache-mtjnbi.eht7o1d4 > div > div > div > div:nth-child(9) > div > div > div > div > div > div > button:hover {
-            background-color: #c82333 !important; /* Um tom de vermelho mais escuro */
-            border-color: #bd2130 !important;
-        }
-        /* EFEITO AO CLICAR (ACTIVE) */
-        #root > div:nth-child(1) > div.withScreencast > div > div > section > div.stMainBlockContainer.block-container.st-emotion-cache-mtjnbi.eht7o1d4 > div > div > div > div:nth-child(9) > div > div > div > div > div > div > button:active {
-            background-color: #bd2130 !important; /* Um tom de vermelho ainda mais escuro */
-            transform: translateY(2px) !important; /* Move o botão 2 pixels para baixo */
         }
     </style>
     """,
@@ -914,6 +888,5 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
-
 
 
