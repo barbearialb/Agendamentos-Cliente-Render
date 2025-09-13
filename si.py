@@ -40,41 +40,24 @@ st.set_page_config(
 @st.cache_resource
 def initialize_firebase():
     """
-    Inicializa a conexão com o Firebase usando as credenciais da variável
-    de ambiente 'firebase_credentials_json' no Render.
+    Inicializa a conexão com o Firebase usando o sistema de "Secrets"
+    do Streamlit, ideal para o Streamlit Community Cloud.
     """
     try:
-        creds_json_str = os.environ.get('firebase_credentials_json')
-        if not creds_json_str:
-            st.error("A variável de ambiente 'firebase_credentials_json' não foi encontrada!")
-            st.stop()
-
-        creds_dict = json.loads(creds_json_str)
+        # Tenta inicializar usando as credenciais do st.secrets
+        # Isso espera que você tenha um arquivo .streamlit/secrets.toml
+        # com a chave [firebase]
+        creds_dict = st.secrets["firebase"]
         cred = credentials.Certificate(creds_dict)
         firebase_admin.initialize_app(cred)
-        print("Firebase inicializado com sucesso!")
+        print("Firebase inicializado com sucesso via st.secrets!")
 
     except Exception as e:
         # Ignora o erro se o app já estiver inicializado, o que é normal com o cache.
         if "The default Firebase app already exists" not in str(e):
-            st.error(f"Erro ao inicializar o Firebase: {e}")
+            st.error(f"ERRO CRÍTICO AO CONECTAR COM O FIREBASE! Detalhe: {e}")
+            st.info("Verifique se você configurou o arquivo .streamlit/secrets.toml corretamente.")
             st.stop()
-
-try:
-    EMAIL = os.environ.get("EMAIL_CREDENCIADO")
-    SENHA = os.environ.get("EMAIL_SENHA")
-
-    if not EMAIL or not SENHA:
-        st.error("As variáveis de ambiente para e-mail (EMAIL_CREDENCIADO, EMAIL_SENHA) não foram encontradas!")
-        st.stop()
-
-except Exception as e:
-    st.error(f"Erro ao carregar as credenciais de e-mail: {e}")
-    st.stop()
-
-initialize_firebase() 
-# Agora, obtém a referência do banco de dados de forma segura
-db = firestore.client() 
 
 st.markdown(
     """
@@ -918,6 +901,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
