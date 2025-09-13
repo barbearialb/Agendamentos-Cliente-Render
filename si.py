@@ -80,24 +80,25 @@ st.markdown(
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
         html, body, [class*="st-"], [class*="css-"] { font-family: 'Roboto', sans-serif; }
 
-        /* --- CSS FINAL E CORRIGIDO --- */
+        /* --- CSS FINAL USANDO SELETORES ESPECÍFICOS E CORRIGIDOS --- */
 
-        /* BOTÃO VERDE (Confirmar Agendamento) */
-        /* Alvo: O nono elemento principal da página, que agora é o seu primeiro formulário */
-        #root > div:nth-child(1) > div > div > div > div > section > div > div > div > div:nth-child(9) button[kind="primary"] {
+        /* --- BOTÃO VERDE (CONFIRMAR AGENDAMENTO) --- */
+        /* Alvo: O 9º elemento filho, que agora é o formulário de agendamento */
+        #root > div:nth-child(1) > div.withScreencast > div > div > section > div.stMainBlockContainer > div > div > div > div:nth-child(9) button[kind="primary"] {
             background-color: #28a745 !important;
             border-color: #28a745 !important;
         }
+        #root > div:nth-child(1) > div.withScreencast > div > div > section > div.stMainBlockContainer > div > div > div > div:nth-child(9) button[kind="primary"] p {
+            color: white !important;
+        }
 
-        /* BOTÃO VERMELHO (Cancelar Agendamento) */
-        /* Alvo: O décimo elemento principal, que é o seu segundo formulário */
-        #root > div:nth-child(1) > div > div > div > div > section > div > div > div > div:nth-child(10) button[kind="primary"] {
+        /* --- BOTÃO VERMELHO (CANCELAR AGENDAMENTO) --- */
+        /* Alvo: O 10º elemento filho, que agora é o formulário de cancelamento */
+        #root > div:nth-child(1) > div.withScreencast > div > div > section > div.stMainBlockContainer > div > div > div > div:nth-child(10) button[kind="primary"] {
             background-color: #dc3545 !important;
             border-color: #dc3545 !important;
         }
-
-        /* Garante que o texto de ambos os botões seja branco */
-        div[data-testid="stForm"] button[kind="primary"] p {
+        #root > div:nth-child(1) > div.withScreencast > div > div > section > div.stMainBlockContainer > div > div > div > div:nth-child(10) button[kind="primary"] p {
             color: white !important;
         }
     </style>
@@ -913,6 +914,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
