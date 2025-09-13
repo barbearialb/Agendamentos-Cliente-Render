@@ -79,22 +79,24 @@ st.markdown(
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
         html, body, [class*="st-"], [class*="css-"] { font-family: 'Roboto', sans-serif; }
-        
-        /* --- CSS DEFINITIVO E ROBUSTO --- */
 
-        /* Alvo: O botão dentro do PRIMEIRO st.form da página (Agendar) */
-        div[data-testid="stForm"]:nth-of-type(1) button[kind="primary"] {
-            background-color: #28a745 !important; /* Verde */
+        /* --- CSS FINAL E CORRIGIDO --- */
+
+        /* BOTÃO VERDE (Confirmar Agendamento) */
+        /* Alvo: O nono elemento principal da página, que agora é o seu primeiro formulário */
+        #root > div:nth-child(1) > div > div > div > div > section > div > div > div > div:nth-child(9) button[kind="primary"] {
+            background-color: #28a745 !important;
             border-color: #28a745 !important;
         }
 
-        /* Alvo: O botão dentro do SEGUNDO st.form da página (Cancelar) */
-        div[data-testid="stForm"]:nth-of-type(2) button[kind="primary"] {
-            background-color: #dc3545 !important; /* Vermelho */
+        /* BOTÃO VERMELHO (Cancelar Agendamento) */
+        /* Alvo: O décimo elemento principal, que é o seu segundo formulário */
+        #root > div:nth-child(1) > div > div > div > div > section > div > div > div > div:nth-child(10) button[kind="primary"] {
+            background-color: #dc3545 !important;
             border-color: #dc3545 !important;
         }
 
-        /* Garante que o texto de AMBOS os botões seja branco */
+        /* Garante que o texto de ambos os botões seja branco */
         div[data-testid="stForm"] button[kind="primary"] p {
             color: white !important;
         }
@@ -911,6 +913,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
