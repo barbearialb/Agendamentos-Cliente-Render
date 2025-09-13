@@ -710,10 +710,9 @@ if submitted:
                 st.stop()
             
             # Regra 2: Verifica o horário de almoço para o barbeiro selecionado
-            if not intervalo_especial and em_horario_de_almoco and dia_da_semana_agendamento < 5:
+            if (dia_da_semana_agendamento < 5) and (not intervalo_especial and em_horario_de_almoco):
                 st.error(f"{barbeiro_selecionado} está em horário de almoço. Por favor, escolha outro horário.")
                 st.stop()
-            
             # Se passou nas regras, verifica a disponibilidade no banco de dados
             chave_agendamento = f"{data_para_id}_{horario_agendamento}_{barbeiro_selecionado}"
             chave_bloqueio = f"{chave_agendamento}_BLOQUEADO"
@@ -925,6 +924,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
