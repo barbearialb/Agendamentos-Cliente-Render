@@ -595,57 +595,72 @@ for horario in horarios_tabela:
 html_table += '</table>'
 st.markdown(html_table, unsafe_allow_html=True)
 
-# Aba de Agendamento (FORMULÁRIO)
+
+if 'barbeiro_selecionado' not in st.session_state:
+    st.session_state.barbeiro_selecionado = "Sem preferência"
+
+def atualiza_barbeiro_selecionado():
+    """Esta função é chamada sempre que o selectbox do barbeiro muda."""
+    st.session_state.barbeiro_selecionado = st.session_state.widget_barbeiro_key
+
 with st.form("agendar_form"):
     st.subheader("Agendar Horário")
     nome = st.text_input("Nome")
     telefone = st.text_input("Telefone")
 
-    # Usar o valor do session state para a data DENTRO do formulário
-    # A data exibida aqui será a mesma da tabela, pois ambas usam session_state
     st.write(f"Data selecionada: **{st.session_state.data_agendamento.strftime('%d/%m/%Y')}**")
-    data_agendamento_str_form = st.session_state.data_agendamento.strftime('%d/%m/%Y') # String para salvar
-    data_obj_agendamento_form = st.session_state.data_agendamento # Objeto date para validações
+    data_agendamento_str_form = st.session_state.data_agendamento.strftime('%d/%m/%Y')
+    data_obj_agendamento_form = st.session_state.data_agendamento
 
-    # Geração da lista de horários completa para agendamento
+    # --- LÓGICA DE FILTRAGEM REATIVA ---
+
+    # 1. O seletor de barbeiro agora usa 'key' e 'on_change' para ser reativo.
+    # O valor selecionado será lido do st.session_state.
+    st.selectbox(
+        "Escolha o barbeiro",
+        barbeiros + ["Sem preferência"],
+        key='widget_barbeiro_key',  # Uma chave única para o widget
+        on_change=atualiza_barbeiro_selecionado # Função a ser chamada na mudança
+    )
+
+    # A lista base de horários
     horarios_base = [f"{h:02d}:{m:02d}" for h in range(8, 20) for m in (0, 30)]
     horarios_para_exibir = horarios_base
 
-    barbeiro_selecionado = st.selectbox("Escolha o barbeiro", barbeiros + ["Sem preferência"])
-    
+    # CAMADA 1: Filtro Temporal (sua lógica de hora cheia, que está correta)
     if data_obj_agendamento_form == datetime.today().date():
-        # Pega apenas a HORA CHEIA atual (ex: 9 para 09:01, 10 para 10:30)
         hora_atual = datetime.now().hour
-        # Mantém apenas os horários cuja HORA seja MAIOR OU IGUAL à hora atual
         horarios_para_exibir = [
-            h for h in horarios_para_exibir 
-            if int(h.split(':')[0]) >= hora_atual
+            h for h in horarios_para_exibir if int(h.split(':')[0]) >= hora_atual
         ]
 
-    # CAMADA 2 E 3: Filtro por Barbeiro e Disponibilidade (usando o mapa_status_por_horario)
+    # CAMADA 2 E 3: Filtro por Barbeiro e Disponibilidade (LÓGICA CORRIGIDA)
     horarios_finais_disponiveis = []
-    if barbeiro_selecionado == "Sem preferência":
-        # Mostra o horário se PELO MENOS UM barbeiro estiver disponível
+    
+    # Agora lemos a seleção do barbeiro diretamente do session_state
+    barbeiro_escolhido = st.session_state.barbeiro_selecionado
+    
+    if barbeiro_escolhido == "Sem preferência":
+        # Lógica para "Sem preferência" continua a mesma
         for horario in horarios_para_exibir:
             if any(status == "Disponível" for status in mapa_status_por_horario.get(horario, {}).values()):
                 horarios_finais_disponiveis.append(horario)
     else:
-        # Mostra o horário apenas se O BARBEIRO ESCOLHIDO estiver disponível
+        # Lógica para barbeiro específico (lendo diretamente do mapa)
         for horario in horarios_para_exibir:
-            if mapa_status_por_horario.get(horario, {}).get(barbeiro_selecionado) == "Disponível":
+            # Pega o status EXATO do barbeiro escolhido para aquele horário
+            status_do_barbeiro = mapa_status_por_horario.get(horario, {}).get(barbeiro_escolhido)
+            if status_do_barbeiro == "Disponível":
                 horarios_finais_disponiveis.append(horario)
 
-    # 3. Exibição final do seletor de horário, agora com a lista filtrada
+    # Exibição final do seletor de horário
     if not horarios_finais_disponiveis:
-        st.warning(f"Não há horários disponíveis para '{barbeiro_selecionado}' nesta data.")
-        horario_agendamento = None # Garante que o form não quebre se a lista estiver vazia
+        st.warning(f"Não há horários disponíveis para '{barbeiro_escolhido}' nesta data.")
+        horario_agendamento = None
     else:
         horario_agendamento = st.selectbox("Horário", horarios_finais_disponiveis)
-    
 
     servicos_selecionados = st.multiselect("Serviços", lista_servicos)
-
-    # Exibir os preços com o símbolo R$
     st.write("Serviços disponíveis:")
     for servico in servicos:
         st.write(f"- {servico}")
@@ -915,6 +930,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
