@@ -80,21 +80,21 @@ st.markdown(
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
         html, body, [class*="st-"], [class*="css-"] { font-family: 'Roboto', sans-serif; }
         
-        /* --- CSS CORRIGIDO E DEFINITIVO --- */
+        /* --- CSS DEFINITIVO E ROBUSTO --- */
 
-        /* Estilo para o botão do PRIMEIRO formulário da página (Confirmar Agendamento) */
+        /* Alvo: O botão dentro do PRIMEIRO st.form da página (Agendar) */
         div[data-testid="stForm"]:nth-of-type(1) button[kind="primary"] {
             background-color: #28a745 !important; /* Verde */
             border-color: #28a745 !important;
         }
 
-        /* Estilo para o botão do SEGUNDO formulário da página (Cancelar Agendamento) */
+        /* Alvo: O botão dentro do SEGUNDO st.form da página (Cancelar) */
         div[data-testid="stForm"]:nth-of-type(2) button[kind="primary"] {
             background-color: #dc3545 !important; /* Vermelho */
             border-color: #dc3545 !important;
         }
 
-        /* Garante que o texto de ambos os botões seja branco */
+        /* Garante que o texto de AMBOS os botões seja branco */
         div[data-testid="stForm"] button[kind="primary"] p {
             color: white !important;
         }
@@ -587,53 +587,53 @@ for horario in horarios_tabela:
 html_table += '</table>'
 st.markdown(html_table, unsafe_allow_html=True)
 
+# --- SEÇÃO COMPLETA DO FORMULÁRIO - VERSÃO FINAL E CORRETA ---
 
+# 1. INICIALIZAÇÃO E SELEÇÃO DO BARBEIRO (FORA DO FORMULÁRIO)
 if 'barbeiro_selecionado' not in st.session_state:
     st.session_state.barbeiro_selecionado = "Sem preferência"
 
 st.session_state.barbeiro_selecionado = st.selectbox(
-    "Primeiro, escolha o barbeiro para atualizar a lista de horários:",
+    "Primeiro, escolha o barbeiro para ver os horários:",
     barbeiros + ["Sem preferência"],
-    key='selectbox_barbeiro_fora_do_form' # Usamos uma chave diferente para evitar conflitos
+    key='selectbox_barbeiro_global'
 )
-barbeiro_escolhido_para_filtragem = st.session_state.barbeiro_selecionado
+barbeiro_escolhido = st.session_state.barbeiro_selecionado
 
 # 2. LÓGICA DE FILTRAGEM (ACONTECE ANTES DO FORMULÁRIO SER DESENHADO)
 horarios_base = [f"{h:02d}:{m:02d}" for h in range(8, 20) for m in (0, 30)]
 horarios_para_exibir = horarios_base
 data_obj_para_filtragem = st.session_state.data_agendamento
 
-# CAMADA 1: Filtro Temporal
+# Filtro Temporal
 if data_obj_para_filtragem == datetime.today().date():
     hora_atual = datetime.now().hour
     horarios_para_exibir = [
         h for h in horarios_para_exibir if int(h.split(':')[0]) >= hora_atual
     ]
 
-# CAMADA 2 E 3: Filtro por Barbeiro e Disponibilidade
+# Filtro de Disponibilidade por Barbeiro
 horarios_finais_disponiveis = []
-if barbeiro_escolhido_para_filtragem == "Sem preferência":
+if barbeiro_escolhido == "Sem preferência":
     for horario in horarios_para_exibir:
         if any(status == "Disponível" for status in mapa_status_por_horario.get(horario, {}).values()):
             horarios_finais_disponiveis.append(horario)
 else:
     for horario in horarios_para_exibir:
-        status_do_barbeiro = mapa_status_por_horario.get(horario, {}).get(barbeiro_escolhido_para_filtragem)
+        status_do_barbeiro = mapa_status_por_horario.get(horario, {}).get(barbeiro_escolhido)
         if status_do_barbeiro == "Disponível":
             horarios_finais_disponiveis.append(horario)
 
-# 3. O FORMULÁRIO (AGORA MAIS SIMPLES)
+# 3. O FORMULÁRIO DE AGENDAMENTO
 with st.form("agendar_form"):
     st.subheader("Preencha para Agendar")
     nome = st.text_input("Nome")
     telefone = st.text_input("Telefone")
 
-    # Apenas mostramos a data e o barbeiro já selecionados
-    st.info(f"Agendando para: **{st.session_state.data_agendamento.strftime('%d/%m/%Y')}** com **{barbeiro_escolhido_para_filtragem}**")
+    st.info(f"Agendando para: **{st.session_state.data_agendamento.strftime('%d/%m/%Y')}** com **{barbeiro_escolhido}**")
 
-    # O seletor de horário agora é o principal elemento interativo dentro do form
     if not horarios_finais_disponiveis:
-        st.warning(f"Não há horários disponíveis para '{barbeiro_escolhido_para_filtragem}' nesta data.")
+        st.warning(f"Não há horários disponíveis para '{barbeiro_escolhido}' nesta data.")
         horario_agendamento = None
     else:
         horario_agendamento = st.selectbox("Escolha um horário disponível:", horarios_finais_disponiveis)
@@ -911,6 +911,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
