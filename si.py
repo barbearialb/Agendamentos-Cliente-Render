@@ -608,6 +608,8 @@ with st.form("agendar_form"):
     # Geração da lista de horários completa para agendamento
     horarios_base = [f"{h:02d}:{m:02d}" for h in range(8, 20) for m in (0, 30)]
     horarios_para_exibir = horarios_base
+
+    barbeiro_selecionado = st.selectbox("Escolha o barbeiro", barbeiros + ["Sem preferência"])
     
     if data_obj_agendamento_form == datetime.today().date():
         # Pega apenas a HORA CHEIA atual (ex: 9 para 09:01, 10 para 10:30)
@@ -911,6 +913,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
