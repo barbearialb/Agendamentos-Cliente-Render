@@ -593,6 +593,8 @@ for horario in horarios_tabela:
 html_table += '</table>'
 st.markdown(html_table, unsafe_allow_html=True)
 
+st.json(mapa_status_por_horario)
+
 # Aba de Agendamento (FORMULÁRIO)
 with st.form("agendar_form"):
     st.subheader("Agendar Horário")
@@ -913,6 +915,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
