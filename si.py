@@ -40,37 +40,36 @@ st.set_page_config(
 @st.cache_resource
 def initialize_firebase():
     """
-    Inicializa a conexão com o Firebase usando o sistema de "Secrets"
-    do Streamlit, ideal para o Streamlit Community Cloud.
+    Inicializa a conexão com o Firebase. A função só é executada uma vez
+    graças ao cache do Streamlit.
     """
     try:
-        # Tenta inicializar usando as credenciais do st.secrets
         creds_dict = st.secrets["firebase"]
+        
+        # Correção para a chave privada no ambiente do Streamlit Cloud
+        if 'private_key' in creds_dict:
+            creds_dict['private_key'] = creds_dict['private_key'].replace('\\n', '\n')
+            
         cred = credentials.Certificate(creds_dict)
-        firebase_admin.initialize_app(cred)
-        print("Firebase inicializado com sucesso via st.secrets!")
+        
+        # Verifica se a app já foi inicializada para evitar erros
+        if not firebase_admin._apps:
+            firebase_admin.initialize_app(cred)
+            print("Firebase inicializado com sucesso via st.secrets!")
 
     except Exception as e:
-        # Ignora o erro se o app já estiver inicializado, o que é normal com o cache.
-        if "The default Firebase app already exists" not in str(e):
-            st.error(f"ERRO CRÍTICO AO CONECTAR COM O FIREBASE! Detalhe: {e}")
-            st.info("Verifique se você configurou o arquivo .streamlit/secrets.toml corretamente.")
-            st.stop()
+        st.error(f"ERRO CRÍTICO AO CONECTAR COM O FIREBASE! Detalhe: {e}")
+        st.info("Verifique se você configurou o arquivo .streamlit/secrets.toml corretamente.")
+        st.stop()
 
-# --- ETAPAS DE EXECUÇÃO ---
-
-# Documentação:
-# 1. Primeiro, chamamos a função para garantir que a conexão com o Firebase seja estabelecida.
+# 1. CHAMA A FUNÇÃO DE INICIALIZAÇÃO (FORA DELA MESMA)
 initialize_firebase()
 
-# Documentação:
-# 2. AGORA SIM! Com o Firebase conectado, criamos a variável 'db' no escopo global.
-#    Isso a torna acessível para TODAS as outras funções do seu script. Este é o ponto
-#    principal da correção.
+# 2. DEFINE O CLIENTE DO FIRESTORE (NO ESCOPO PRINCIPAL)
+#    Agora a variável 'db' estará acessível em todo o seu código.
 db = firestore.client()
 
-# Documentação:
-# 3. Por fim, carregamos as credenciais de e-mail, também no escopo global.
+# 3. CARREGA AS CREDENCIAIS DE E-MAIL (TAMBÉM NO ESCOPO PRINCIPAL)
 try:
     EMAIL = st.secrets["email_credentials"]["email"]
     SENHA = st.secrets["email_credentials"]["password"]
@@ -922,6 +921,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
