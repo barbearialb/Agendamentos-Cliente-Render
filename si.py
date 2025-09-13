@@ -767,16 +767,13 @@ if submitted:
 # A data já está como objeto em data_obj_agendamento_form
         data_para_id_form = data_obj_agendamento_form.strftime('%Y-%-m-%d')
 
-        intervalo_especial = False
-        if dia_da_semana_agendamento < 5:
-            intervalo_especial = (mes == 7 and 10 <= dia <= 19)
-            
+        e_dia_de_semana = dia_da_semana_agendamento < 5  # True se for de Segunda a Sexta
+        em_horario_de_almoco = (hora_agendamento_int == 12 or hora_agendamento_int == 13)
+        e_intervalo_especial = (mes == 7 and 10 <= dia <= 19)
+
         for b in barbeiros_a_verificar:
-            if not intervalo_especial:
-                if b == "Lucas Borges" and (hora_agendamento_int == 12 or hora_agendamento_int == 13):
-                    continue # Pula este barbeiro se estiver em almoço
-                if b == "Aluizio" and (hora_agendamento_int == 12 or hora_agendamento_int == 13):
-                    continue # Pula este barbeiro se estiver em almoço
+            if e_dia_de_semana and em_horario_de_almoco and not e_intervalo_especial:
+                continue   #Pula este barbeiro se estiver em almoço
 
             chave_agendamento_form = f"{data_para_id_form}_{horario_agendamento}_{b}"
             chave_bloqueio_form = f"{chave_agendamento_form}_BLOQUEADO"
@@ -924,6 +921,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
