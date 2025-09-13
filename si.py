@@ -3,6 +3,7 @@ import firebase_admin
 from firebase_admin import credentials, firestore, auth
 from google.cloud.firestore_v1.field_path import FieldPath
 from datetime import datetime, timedelta
+import pytz
 import smtplib
 from email.mime.text import MIMEText
 import json
@@ -14,6 +15,7 @@ import time
 from PIL import Image, ImageDraw, ImageFont
 import io
 import os # <-- MÓDULO ADICIONADO
+
 
 # --- 1. CAMINHO SEGURO PARA O ÍCONE (NOVO BLOCO DE CÓDIGO) ---
 # Documentação: Esta seção cria um caminho completo e seguro para a pasta 'static',
@@ -606,9 +608,13 @@ horarios_base = [f"{h:02d}:{m:02d}" for h in range(8, 20) for m in (0, 30)]
 horarios_para_exibir = horarios_base
 data_obj_para_filtragem = st.session_state.data_agendamento
 
-# Filtro Temporal
+# Filtro Temporal (CORRIGIDO PARA O HORÁRIO DE BRASÍLIA)
 if data_obj_para_filtragem == datetime.today().date():
-    hora_atual = datetime.now().hour
+    # Define o fuso horário de Brasília
+    fuso_horario_brasilia = pytz.timezone('America/Sao_Paulo')
+    # Pega a hora atual especificamente para o fuso horário de Brasília
+    hora_atual = datetime.now(fuso_horario_brasilia).hour
+
     horarios_para_exibir = [
         h for h in horarios_para_exibir if int(h.split(':')[0]) >= hora_atual
     ]
@@ -912,6 +918,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
