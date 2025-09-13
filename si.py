@@ -45,8 +45,6 @@ def initialize_firebase():
     """
     try:
         # Tenta inicializar usando as credenciais do st.secrets
-        # Isso espera que você tenha um arquivo .streamlit/secrets.toml
-        # com a chave [firebase]
         creds_dict = st.secrets["firebase"]
         cred = credentials.Certificate(creds_dict)
         firebase_admin.initialize_app(cred)
@@ -58,19 +56,29 @@ def initialize_firebase():
             st.error(f"ERRO CRÍTICO AO CONECTAR COM O FIREBASE! Detalhe: {e}")
             st.info("Verifique se você configurou o arquivo .streamlit/secrets.toml corretamente.")
             st.stop()
-    initialize_firebase()
 
-# Documentação: Esta é a correção principal que cria a variável `db`
-    db = firestore.client()
+# --- ETAPAS DE EXECUÇÃO ---
 
-# Documentação: E aqui carregamos as credenciais de e-mail.
-    try:
-        EMAIL = st.secrets["email_credentials"]["email"]
-        SENHA = st.secrets["email_credentials"]["password"]
-    except (KeyError, AttributeError):
-        st.error("Credenciais de e-mail não encontradas no secrets.toml. A função de envio de e-mail será desativada.")
-        EMAIL = None
-        SENHA = None
+# Documentação:
+# 1. Primeiro, chamamos a função para garantir que a conexão com o Firebase seja estabelecida.
+initialize_firebase()
+
+# Documentação:
+# 2. AGORA SIM! Com o Firebase conectado, criamos a variável 'db' no escopo global.
+#    Isso a torna acessível para TODAS as outras funções do seu script. Este é o ponto
+#    principal da correção.
+db = firestore.client()
+
+# Documentação:
+# 3. Por fim, carregamos as credenciais de e-mail, também no escopo global.
+try:
+    EMAIL = st.secrets["email_credentials"]["email"]
+    SENHA = st.secrets["email_credentials"]["password"]
+except (KeyError, AttributeError):
+    st.error("Credenciais de e-mail não encontradas no secrets.toml. A função de envio de e-mail será desativada.")
+    EMAIL = None
+    SENHA = None
+
 
 st.markdown(
     """
@@ -914,6 +922,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
