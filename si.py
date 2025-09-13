@@ -77,35 +77,33 @@ db = firestore.client()
 st.markdown(
     """
     <style>
-        /* --- ESTILOS DE FONTE E SEUS ESTILOS ORIGINAIS --- */
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
         html, body, [class*="st-"], [class*="css-"] { font-family: 'Roboto', sans-serif; }
-        table { display: block !important; width: fit-content !important; }
-        div[data-testid="stForm"] { display: block !important; }
+        
+        /* --- CSS CORRIGIDO E ROBUSTO --- */
 
-        /* --- CÓDIGO FINAL E VENCEDOR PARA OS BOTÕES --- */
-
-        /* --- BOTÃO VERDE (CONFIRMAR AGENDAMENTO) --- */
-        /* Alvo: O botão exato que o seu navegador indicou */
-        #root > div:nth-child(1) > div.withScreencast > div > div > section > div.stMainBlockContainer.block-container.st-emotion-cache-mtjnbi.eht7o1d4 > div > div > div > div:nth-child(8) > div > div > div > div > div > div > button {
+        /* Estilo para o botão VERDE de Confirmar Agendamento */
+        div[data-testid="stForm"][key="form_agendar"] button[kind="primary"] {
             background-color: #28a745 !important;
             border-color: #28a745 !important;
-        }
-        /* Alvo: O texto dentro do botão verde */
-        #root > div:nth-child(1) > div.withScreencast > div > div > section > div.stMainBlockContainer.block-container.st-emotion-cache-mtjnbi.eht7o1d4 > div > div > div > div:nth-child(8) > div > div > div > div > div > div > button p {
             color: white !important;
         }
 
-        /* --- BOTÃO VERMELHO (CANCELAR AGENDAMENTO) --- */
-        /* Alvo: O segundo botão exato que o seu navegador indicou */
-        #root > div:nth-child(1) > div.withScreencast > div > div > section > div.stMainBlockContainer.block-container.st-emotion-cache-mtjnbi.eht7o1d4 > div > div > div > div:nth-child(9) > div > div > div > div > div > div > button {
-            background-color: #dc3545 !important;
-            border-color: #dc3545 !important;
-        }
-        /* Alvo: O texto dentro do botão vermelho */
-        #root > div:nth-child(1) > div.withScreencast > div > div > section > div.stMainBlockContainer.block-container.st-emotion-cache-mtjnbi.eht7o1d4 > div > div > div > div:nth-child(9) > div > div > div > div > div > div > button p {
+        div[data-testid="stForm"][key="form_agendar"] button[kind="primary"] p {
             color: white !important;
         }
+
+        /* Estilo para o botão VERMELHO de Cancelar Agendamento */
+        div[data-testid="stForm"][key="form_cancelar"] button[kind="primary"] {
+            background-color: #dc3545 !important;
+            border-color: #dc3545 !important;
+            color: white !important;
+        }
+
+        div[data-testid="stForm"][key="form_cancelar"] button[kind="primary"] p {
+            color: white !important;
+        }
+
     </style>
     """,
     unsafe_allow_html=True,
@@ -631,7 +629,7 @@ else:
             horarios_finais_disponiveis.append(horario)
 
 # 3. O FORMULÁRIO (AGORA MAIS SIMPLES)
-with st.form("agendar_form"):
+with st.form("agendar_form", keys='form_agendar'):
     st.subheader("Preencha para Agendar")
     nome = st.text_input("Nome")
     telefone = st.text_input("Telefone")
@@ -858,7 +856,7 @@ if submitted:
 
 
 # Aba de Cancelamento
-with st.form("cancelar_form"):
+with st.form("cancelar_form", keys='form_cancelar'):
     st.subheader("Cancelar Agendamento")
     telefone_cancelar = st.text_input("Telefone usado no Agendamento")
     data_cancelar = st.date_input("Data do Agendamento", min_value=datetime.today().date()) # Usar date()
@@ -919,6 +917,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
