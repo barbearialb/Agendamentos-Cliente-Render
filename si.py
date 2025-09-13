@@ -595,7 +595,7 @@ if 'barbeiro_selecionado' not in st.session_state:
     st.session_state.barbeiro_selecionado = "Sem preferência"
 
 st.session_state.barbeiro_selecionado = st.selectbox(
-    "Primeiro, escolha o barbeiro para ver os horários:",
+    "Primeiro, escolha o barbeiro para atualizar a lista de horários:",
     barbeiros + ["Sem preferência"],
     key='selectbox_barbeiro_global'
 )
@@ -912,6 +912,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
