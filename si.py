@@ -58,6 +58,19 @@ def initialize_firebase():
             st.error(f"ERRO CRÍTICO AO CONECTAR COM O FIREBASE! Detalhe: {e}")
             st.info("Verifique se você configurou o arquivo .streamlit/secrets.toml corretamente.")
             st.stop()
+    initialize_firebase()
+
+# Documentação: Esta é a correção principal que cria a variável `db`
+    db = firestore.client()
+
+# Documentação: E aqui carregamos as credenciais de e-mail.
+    try:
+        EMAIL = st.secrets["email_credentials"]["email"]
+        SENHA = st.secrets["email_credentials"]["password"]
+    except (KeyError, AttributeError):
+        st.error("Credenciais de e-mail não encontradas no secrets.toml. A função de envio de e-mail será desativada.")
+        EMAIL = None
+        SENHA = None
 
 st.markdown(
     """
@@ -901,6 +914,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
