@@ -44,9 +44,13 @@ def initialize_firebase():
     graças ao cache do Streamlit.
     """
     try:
-        creds_dict = st.secrets["firebase"]
+        # 1. Carrega os segredos do Streamlit
+        firebase_secrets = st.secrets["firebase"]
         
-        # Correção para a chave privada no ambiente do Streamlit Cloud
+        # 2. CRIA UMA CÓPIA MUTÁVEL (editável) do dicionário de segredos
+        creds_dict = dict(firebase_secrets)
+        
+        # 3. Agora modificamos a CÓPIA, não o segredo original
         if 'private_key' in creds_dict:
             creds_dict['private_key'] = creds_dict['private_key'].replace('\\n', '\n')
             
@@ -921,6 +925,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
