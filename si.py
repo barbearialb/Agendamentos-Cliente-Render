@@ -496,8 +496,10 @@ horarios_tabela = [f"{h:02d}:{m:02d}" for h in range(8, 20) for m in (0, 30)]
 dia_tabela = data_obj_tabela.day
 mes_tabela = data_obj_tabela.month
 intervalo_especial = mes_tabela == 7 and 10 <= dia_tabela <= 19
+mapa_status_por_horario = {}
 
 for horario in horarios_tabela:
+    mapa_status_por_horario.setdefault(horario, {})
     html_table += f'<tr><td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{horario}</td>'
     for barbeiro in barbeiros:
         # A nova regra: SÓ bloqueia as 8:00 se NÃO for o intervalo especial
@@ -604,17 +606,38 @@ with st.form("agendar_form"):
     data_obj_agendamento_form = st.session_state.data_agendamento # Objeto date para validações
 
     # Geração da lista de horários completa para agendamento
-    horarios_base_agendamento = [f"{h:02d}:{m:02d}" for h in range(8, 20) for m in (0, 30)]
+    horarios_base = [f"{h:02d}:{m:02d}" for h in range(8, 20) for m in (0, 30)]
+    horarios_para_exibir = horarios_base
+    
+    if data_obj_agendamento_form == datetime.today().date():
+        # Pega apenas a HORA CHEIA atual (ex: 9 para 09:01, 10 para 10:30)
+        hora_atual = datetime.now().hour
+        # Mantém apenas os horários cuja HORA seja MAIOR OU IGUAL à hora atual
+        horarios_para_exibir = [
+            h for h in horarios_para_exibir 
+            if int(h.split(':')[0]) >= hora_atual
+        ]
 
-    barbeiro_selecionado = st.selectbox("Escolha o barbeiro", barbeiros + ["Sem preferência"])
+    # CAMADA 2 E 3: Filtro por Barbeiro e Disponibilidade (usando o mapa_status_por_horario)
+    horarios_finais_disponiveis = []
+    if barbeiro_selecionado == "Sem preferência":
+        # Mostra o horário se PELO MENOS UM barbeiro estiver disponível
+        for horario in horarios_para_exibir:
+            if any(status == "Disponível" for status in mapa_status_por_horario.get(horario, {}).values()):
+                horarios_finais_disponiveis.append(horario)
+    else:
+        # Mostra o horário apenas se O BARBEIRO ESCOLHIDO estiver disponível
+        for horario in horarios_para_exibir:
+            if mapa_status_por_horario.get(horario, {}).get(barbeiro_selecionado) == "Disponível":
+                horarios_finais_disponiveis.append(horario)
 
-    # Filtrar horários de almoço com base no barbeiro selecionado ou "Sem preferência"
-    # (Opcional: Poderia filtrar aqui, mas a validação no submit é mais robusta)
-    horarios_disponiveis_dropdown = horarios_base_agendamento # Por enquanto, mostra todos
-    # --- Lógica de filtragem complexa poderia entrar aqui ---
-    # Mas é mais seguro validar APÓS o submit, pois a disponibilidade pode mudar
-
-    horario_agendamento = st.selectbox("Horário", horarios_disponiveis_dropdown)
+    # 3. Exibição final do seletor de horário, agora com a lista filtrada
+    if not horarios_finais_disponiveis:
+        st.warning(f"Não há horários disponíveis para '{barbeiro_selecionado}' nesta data.")
+        horario_agendamento = None # Garante que o form não quebre se a lista estiver vazia
+    else:
+        horario_agendamento = st.selectbox("Horário", horarios_finais_disponiveis)
+    
 
     servicos_selecionados = st.multiselect("Serviços", lista_servicos)
 
@@ -888,5 +911,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
+
 
 
