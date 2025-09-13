@@ -856,7 +856,7 @@ if submitted:
 
 
 # Aba de Cancelamento
-with st.form("form_cancelar):
+with st.form("form_cancelar"):
     st.subheader("Cancelar Agendamento")
     telefone_cancelar = st.text_input("Telefone usado no Agendamento")
     data_cancelar = st.date_input("Data do Agendamento", min_value=datetime.today().date()) # Usar date()
@@ -917,6 +917,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
