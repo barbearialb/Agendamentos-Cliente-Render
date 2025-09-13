@@ -629,7 +629,7 @@ else:
             horarios_finais_disponiveis.append(horario)
 
 # 3. O FORMULÁRIO (AGORA MAIS SIMPLES)
-with st.form("agendar_form", keys='form_agendar'):
+with st.form("agendar_form", key='form_agendar'):
     st.subheader("Preencha para Agendar")
     nome = st.text_input("Nome")
     telefone = st.text_input("Telefone")
@@ -856,7 +856,7 @@ if submitted:
 
 
 # Aba de Cancelamento
-with st.form("cancelar_form", keys='form_cancelar'):
+with st.form("cancelar_form", key='form_cancelar'):
     st.subheader("Cancelar Agendamento")
     telefone_cancelar = st.text_input("Telefone usado no Agendamento")
     data_cancelar = st.date_input("Data do Agendamento", min_value=datetime.today().date()) # Usar date()
@@ -917,6 +917,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
