@@ -609,12 +609,12 @@ horarios_para_exibir = horarios_base
 data_obj_para_filtragem = st.session_state.data_agendamento
 
 # Filtro Temporal (CORRIGIDO PARA O HORÁRIO DE BRASÍLIA)
-if data_obj_para_filtragem == datetime.today().date():
-    # Define o fuso horário de Brasília
-    fuso_horario_brasilia = pytz.timezone('America/Sao_Paulo')
-    # Pega a hora atual especificamente para o fuso horário de Brasília
-    hora_atual = datetime.now(fuso_horario_brasilia).hour
+# A SUA VERSÃO (A MELHOR VERSÃO)
+fuso_horario_brasilia = pytz.timezone('America/Sao_Paulo')
+agora_brasilia = datetime.now(fuso_horario_brasilia)
 
+if data_obj_para_filtragem == agora_brasilia.date():
+    hora_atual = agora_brasilia.hour
     horarios_para_exibir = [
         h for h in horarios_para_exibir if int(h.split(':')[0]) >= hora_atual
     ]
@@ -918,6 +918,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
