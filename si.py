@@ -585,6 +585,8 @@ for horario in horarios_tabela:
             else: # Domingo normal
                 status, bg_color, color_text = "Fechado", "#A9A9A9", "black"
 
+        mapa_status_por_horario[horario][barbeiro] = status
+
         
         html_table += f'<td style="padding: 8px; border: 1px solid #ddd; background-color: {bg_color}; text-align: center; color: {color_text}; height: 30px;">{status}</td>'
     
@@ -592,8 +594,6 @@ for horario in horarios_tabela:
 
 html_table += '</table>'
 st.markdown(html_table, unsafe_allow_html=True)
-
-st.json(mapa_status_por_horario)
 
 # Aba de Agendamento (FORMULÁRIO)
 with st.form("agendar_form"):
@@ -915,6 +915,7 @@ if submitted_cancelar:
                 time.sleep(5)
                 st.rerun()
                 
+
 
 
 
